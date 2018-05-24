@@ -16,10 +16,10 @@ const styles = {
 class Board extends React.Component {
   createBoard = function(){
         let childs = [];
-        for (let j = 0; j < this.props.size; j++){
-            childs[j] = [];
-            for (let i = 0; i < this.props.size; i++){
-                childs[j][i] = <Box size={this.props.size} key={j+i}/>;
+        for (let x = 0; x < this.props.size; x++){
+            childs[x] = [];
+            for (let y = 0; y < this.props.size; y++){
+                childs[x][y] = <Box size={this.props.size} key={x+y} x={x*3} y={y*3}/>;
             }    
         }
         

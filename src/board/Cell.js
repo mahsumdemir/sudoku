@@ -1,10 +1,11 @@
 import React from 'react';
 import Number from './Number.js';
 import injectSheet from 'react-jss';
-import eventRegistry from '../EventRegistry.js';
+import { eventRegistry, eventNameGenerator } from '../EventRegistry.js';
 
 const styles = {
-    cell: {
+    
+    cell:{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -12,24 +13,46 @@ const styles = {
         height: '50px',
         border: '1px solid black',
         cursor: 'pointer',
-        '&:hover':{
-            backgroundColor: 'red'
+        padding: '0px'
+    },
+    
+    normalCell: {
+        '&:hover': {
+            backgroundColor: 'grey'
         },
+    },
+
+    errorCell: {
+        backgroundColor: 'red'
     }
+
+
 }
 
-class Cell extends React.Component{
+class Cell extends React.Component {
 
-    constructor(){
+    constructor() {
         super();
 
         this.state = {
-            number: 0
+            number: 0,
+            style: "normal"
         }
 
         this.changeNumber = this.changeNumber.bind(this);
+        this.showError = this.showError.bind(this);
+    }
 
-        eventRegistry.addEvent("changeNumber", this.changeNumber);
+    componentDidMount() {
+        let x = this.props.x;
+        let y = this.props.y;
+
+        eventRegistry.addEvent(
+            eventNameGenerator.getChangeCellNumberEventName(x, y),
+            this.changeNumber);
+        eventRegistry.addEvent(
+            eventNameGenerator.getShowErrorEventName(x, y),
+            this.showError);
     }
 
     changeNumber = (number) => {
@@ -38,11 +61,20 @@ class Cell extends React.Component{
         })
     }
 
+    showError = () => {
+        this.setState({
+            style: 'error'
+        })
+    }
 
-    render(){
+
+    render() {
         const classes = this.props.classes;
-        return(
-            <div className={classes.cell}><Number value={this.state.number}/></div>
+        const className = this.state.style === "normal" ? classes.normalCell : classes.errorCell; 
+        return (
+            <div className={[classes.cell + " " + className]}>
+                <Number value={this.state.number} />
+            </div>
         )
     }
 }

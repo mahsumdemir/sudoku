@@ -24,10 +24,11 @@ class Box extends React.Component{
     createBox = function(){
         const childrens = [];
         const size = this.props.size;
-        for (let j = 0; j < size; j++){
-            childrens[j] = [];
-            for (let i = 0; i < size; i++){
-                childrens[j][i] = <Cell key={j+i}/>;
+        for (let x = 0; x < size; x++){
+            childrens[x] = [];
+            for (let y = 0; y < size; y++){
+                childrens[x][y] = <Cell key={this.props.x+x+this.props.y+y}
+                 x={this.props.x + x} y={this.props.y + y}/>;
             }
         }
         

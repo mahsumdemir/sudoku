@@ -1,5 +1,17 @@
 import React from 'react';
 import Cell from './Cell.js';
+import injectSheet from 'react-jss';
+
+const styles = {
+    box:{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr 1fr',
+        border: '1px solid black',
+        '&:nth-child(2n)':{
+            backgroundColor: 'aqua'
+        }
+    }
+}
 
 class Box extends React.Component{
 
@@ -17,8 +29,9 @@ class Box extends React.Component{
     }
 
     render(){
+        const classes = this.props.classes;
         return(
-            <div className="sudoku-box">
+            <div className={classes.box}>
                 {this.createBox()}
             </div>
         )
@@ -26,4 +39,4 @@ class Box extends React.Component{
     }
 }
 
-export default Box;
+export default injectSheet(styles)(Box);

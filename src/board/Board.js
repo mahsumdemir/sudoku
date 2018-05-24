@@ -1,12 +1,20 @@
 import React from 'react';
 import Box from './Box.js';
+import injectSheet from 'react-jss'; 
+
+const styles = {
+    board: {
+        width: '500px',
+        height: '500px',
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr 1fr',
+        margin: '20px',
+        backgroundColor: 'grey'
+      }
+}
 
 class Board extends React.Component {
-    constructor() {
-        super();
-    }
-
-    createBoard = function(){
+  createBoard = function(){
         let childs = [];
         for (let j = 0; j < this.props.size; j++){
             childs[j] = [];
@@ -19,12 +27,14 @@ class Board extends React.Component {
     }
 
     render() {
+        const classes = this.props.classes;
+        debugger;
         return (
-            <div className="sudoku-board">
+            <div className={classes.board}>
                 {this.createBoard()}
             </div>
         )
     }
 }
 
-export default Board;
+export default injectSheet(styles)(Board);

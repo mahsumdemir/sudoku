@@ -1,6 +1,7 @@
 import React from 'react';
 import Cell from './Cell.js';
 import injectSheet from 'react-jss';
+import { eventRegistry, eventNameGenerator } from '../EventRegistry.js';
 
 const styles = {
     box: {
@@ -21,14 +22,34 @@ const styles = {
 
 class Box extends React.Component{
 
-    createBox = function(){
+    constructor(props){
+        super(props);
+
+        this.state = {
+            childrens: this.createChildrens(this.props.size, this.props.x, this.props.y)
+        }
+
+        this.onNumberChanged = this.onNumberChanged.bind(this);
+    }
+
+    onNumberChanged = (number, x, y) => {
+        for (var i = 0; i < this.props.size; i++){
+            for (var j = 0; j < this.props.size; j++){
+                if (!(i === x && j === y))
+                    eventRegistry.getEvent(eventNameGenerator.getDeleteAvaiableNumberEventName(i, j))(number);
+            }
+        }
+        
+    }
+
+    createChildrens = function(size, boxX, boxY){
         const childrens = [];
-        const size = this.props.size;
         for (let x = 0; x < size; x++){
             childrens[x] = [];
             for (let y = 0; y < size; y++){
-                childrens[x][y] = <Cell key={this.props.x+x+this.props.y+y}
-                 x={this.props.x + x} y={this.props.y + y}/>;
+                childrens[x][y] = <Cell key={boxX+x+boxY+y}
+                 x={boxX + x} y={boxY + y} onNumberChanged={this.onNumberChanged}
+                 size={size}/>;
             }
         }
         
@@ -39,7 +60,7 @@ class Box extends React.Component{
         const classes = this.props.classes;
         return(
             <div className={classes.box}>
-                {this.createBox()}
+                {this.state.childrens}
             </div>
         )
         

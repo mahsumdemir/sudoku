@@ -31,16 +31,28 @@ const styles = {
 
 class Cell extends React.Component {
 
-    constructor() {
+    constructor(props) {
         super();
 
         this.state = {
             number: 0,
-            style: "normal"
+            style: "normal",
+            availableNumbers: this.createAvailableNumbers(props.size)
         }
 
         this.changeNumber = this.changeNumber.bind(this);
         this.showError = this.showError.bind(this);
+        this.getNumber = this.getNumber.bind(this);
+        this.onCellClicked = this.onCellClicked.bind(this);
+        this.deleteAvaiableNumber = this.deleteAvaiableNumber.bind(this);
+    }
+
+    createAvailableNumbers(size){
+        let array = [];
+        for (var i = 0; i < size * size; i++){
+            array.push(i);
+        }
+        return array;
     }
 
     componentDidMount() {
@@ -49,16 +61,45 @@ class Cell extends React.Component {
 
         eventRegistry.addEvent(
             eventNameGenerator.getChangeCellNumberEventName(x, y),
-            this.changeNumber);
+            this.changeNumber
+        );
         eventRegistry.addEvent(
             eventNameGenerator.getShowErrorEventName(x, y),
-            this.showError);
+            this.showError
+        );
+        eventRegistry.addEvent(
+            eventNameGenerator.getNumberEventName(x, y),
+            this.getNumber
+        );
+        eventRegistry.addEvent(
+            eventNameGenerator.getDeleteAvaiableNumberEventName(x, y),
+            this.deleteAvaiableNumber
+        );    
+        
+    }
+
+    getNumber = () => {
+        return this.state.number;
     }
 
     changeNumber = (number) => {
-        this.setState({
-            number: number
-        })
+        var availableNumbers = this.state.availableNumbers;
+        var numberIndex = availableNumbers.indexOf(number);
+
+        if (numberIndex === -1){
+            this.setState({
+                number: number,
+                style: 'error'
+            })
+        } else {
+            availableNumbers.splice(numberIndex, 1);
+            this.setState({
+                number: number,
+                style: 'normal',
+                availableNumbers: availableNumbers
+            })
+            this.props.onNumberChanged(number, this.props.x, this.props.y);
+        }
     }
 
     showError = () => {
@@ -67,12 +108,34 @@ class Cell extends React.Component {
         })
     }
 
+    deleteAvaiableNumber(number){
+        var availableNumbers = this.state.availableNumbers;
+        var numberIndex = availableNumbers.indexOf(number);
+        if (numberIndex !== -1){
+            availableNumbers.splice(numberIndex, 1);
+        }
+
+        if (availableNumbers.length < 1){
+            this.setState({
+                style: 'error',
+                availableNumbers: []
+            })
+        } else {
+            this.setState({
+                availableNumbers: availableNumbers
+            })
+        }
+    }
+
+    onCellClicked = () => {
+        console.log("x: " + this.props.x + " y: " + this.props.y + " availableNumbers: " + this.state.availableNumbers); 
+    }
 
     render() {
         const classes = this.props.classes;
         const className = this.state.style === "normal" ? classes.normalCell : classes.errorCell; 
         return (
-            <div className={[classes.cell + " " + className]}>
+            <div className={[classes.cell + " " + className]} onClick={this.onCellClicked}>
                 <Number value={this.state.number} />
             </div>
         )

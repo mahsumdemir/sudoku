@@ -26,7 +26,8 @@ const eventNameGenerator = function(){
         getChangeCellNumberEventName: (x, y) => "changeNumber_" + x + "_" + y,
         getShowErrorEventName: (x, y) => "showError_" + x + "_" + y,
         getNumberEventName: (x, y) => 'getNumber_' + x + "_" + y,
-        getDeleteAvaiableNumberEventName: (x, y) => 'deleteAvailableNumber_' + x + "_" + y
+        getDeleteAvaiableNumberEventName: (x, y) => 'deleteAvailableNumber_' + x + "_" + y,
+        getCrossBoxValidatiobsEventName: (x, y) => 'crossBoxValidations_' + x + "_" + y
     }
 }();
 

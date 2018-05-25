@@ -83,6 +83,8 @@ class Cell extends React.Component {
     }
 
     changeNumber = (number) => {
+        if (this.state.number === number) return;
+
         var availableNumbers = this.state.availableNumbers;
         var numberIndex = availableNumbers.indexOf(number);
 

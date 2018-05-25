@@ -30,6 +30,26 @@ class Box extends React.Component{
         }
 
         this.onNumberChanged = this.onNumberChanged.bind(this);
+        this.crossBoxValidations = this.crossBoxValidations.bind(this);
+    }
+
+    componentDidMount(){
+        eventRegistry.addEvent(
+            eventNameGenerator.getCrossBoxValidatiobsEventName(this.props.x, this.props.y),
+            this.crossBoxValidations
+        )
+    }
+
+    crossBoxValidations = (number, x, y) => {
+        for (var i = 0; i < this.props.size; i++){
+            for (var j = 0; j < this.props.size; j++){
+                if (i === x || i === y){
+                    eventRegistry.getEvent(
+                        eventNameGenerator.getDeleteAvaiableNumberEventName(i, j)
+                    )(number);
+                }
+            }
+        }
     }
 
     onNumberChanged = (number, x, y) => {
@@ -39,7 +59,7 @@ class Box extends React.Component{
                     eventRegistry.getEvent(eventNameGenerator.getDeleteAvaiableNumberEventName(i, j))(number);
             }
         }
-        
+        this.props.onNumberChanged(number, this.props.x, this.props.y, x, y);
     }
 
     createChildrens = function(size, boxX, boxY){

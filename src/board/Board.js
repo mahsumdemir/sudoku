@@ -28,9 +28,10 @@ class Board extends React.Component {
     onNumberChanged = (number, boxX, boxY, cellX, cellY) => {
         for (var i = 0; i < this.props.size; i++){
             for (var j = 0; j < this.props.size; j++){
-                if (boxX === i && boxY !== j){
+                debugger;
+                if ((boxX === i && boxY !== j) || (boxX !== i && boxY === j)){
                     eventRegistry.getEvent(
-                        eventNameGenerator.getCrossBoxValidatiobsEventName(i ,j)
+                        eventNameGenerator.getCrossBoxValidatiobsEventName(i,j)
                     )(number, cellX, cellY);
                 }
             }
@@ -38,11 +39,13 @@ class Board extends React.Component {
     }
 
     createChildrens = function (size) {
+        let events = this.props.events;
         let childs = [];
         for (let x = 0; x < size; x++) {
             childs[x] = [];
             for (let y = 0; y < size; y++) {
-                childs[x][y] = <Box size={size} key={x + y} x={x * 3} y={y * 3} onNumberChanged={this.onNumberChanged}/>;
+                let newRegistry = event.newRegistry("box_" + x + "_" + y);
+                childs[x][y] = <Box size={size} key={x + y} x={x} y={y} onNumberChanged={this.onNumberChanged} events={newRegistry}/>;
             }
         }
 

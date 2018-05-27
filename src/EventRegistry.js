@@ -1,35 +1,38 @@
-const eventRegistry = function(){
-    //private things
-    var _eventRegistry = {}
-    
+var eventRegistry = function (name, parent) {
+    var _childs = {};
+    var _events = {};
+    var _name = name;
+    var _parent = parent;
+
     return {
-        //public things
-        addEvent: (name, callback) => {
-            if (_eventRegistry[name] != null){
-                console.log("There is already an event registred with name of " + name);
-            }
-
-            _eventRegistry[name] = callback;
-        },
-
-        getEvent: (name) => {
-            return _eventRegistry[name];
+      addEvent: function(name, callback){
+        if (_childs[name] != null) {
+          console.log("There is already an event registred with name of " + name);
         }
+  
+        _events[name] = callback;
+      },
+  
+      getEvent: function(name){
+        return _events[name];
+      },
+
+      getName: function(){ return _name; },
+      getParent: function() { return _parent; },
+      addChild: function(name, child){
+        _childs[name] = child;
+      },
+
+      newRegistry: function(name){
+        var newRegistry = eventRegistry(name, this);
+        
+        this.addChild(newRegistry);
+        
+        return newRegistry;  
+      }
     }
-}();
+};
 
-const eventNameGenerator = function(){
-    //private things
+var parent = eventRegistry("root", null);
 
-    //public things
-    return {
-        getChangeCellNumberEventName: (x, y) => "changeNumber_" + x + "_" + y,
-        getShowErrorEventName: (x, y) => "showError_" + x + "_" + y,
-        getNumberEventName: (x, y) => 'getNumber_' + x + "_" + y,
-        getDeleteAvaiableNumberEventName: (x, y) => 'deleteAvailableNumber_' + x + "_" + y,
-        getCrossBoxValidatiobsEventName: (x, y) => 'crossBoxValidations_' + x + "_" + y
-    }
-}();
-
-export {eventRegistry, eventNameGenerator};
-
+export default parent;

@@ -43,9 +43,13 @@ class Box extends React.Component{
     crossBoxValidations = (number, x, y) => {
         for (var i = 0; i < this.props.size; i++){
             for (var j = 0; j < this.props.size; j++){
-                if (i === x || i === y){
+                if (i === x || j === y){
+                    debugger;
                     eventRegistry.getEvent(
-                        eventNameGenerator.getDeleteAvaiableNumberEventName(i, j)
+                        eventNameGenerator.getDeleteAvaiableNumberEventName(
+                            this.props.x * 3 + i,
+                            this.props.y * 3 + j
+                        )
                     )(number);
                 }
             }
@@ -63,13 +67,16 @@ class Box extends React.Component{
     }
 
     createChildrens = function(size, boxX, boxY){
+        let events = this.props.events;
         const childrens = [];
         for (let x = 0; x < size; x++){
             childrens[x] = [];
             for (let y = 0; y < size; y++){
-                childrens[x][y] = <Cell key={boxX+x+boxY+y}
-                 x={boxX + x} y={boxY + y} onNumberChanged={this.onNumberChanged}
-                 size={size}/>;
+                let newRegistry = events.newRegistry("cell_" + x + "_" + y);
+                childrens[x][y] = <Cell key={x + y}
+                 x={x} y={y} onNumberChanged={this.onNumberChanged}
+                 size={size}
+                 events={newRegistry}/>;
             }
         }
         

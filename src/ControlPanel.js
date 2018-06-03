@@ -1,5 +1,5 @@
 import React from 'react';
-import { eventRegistry, eventNameGenerator } from './EventRegistry.js';
+import { parent } from './EventRegistry.js';
 
 class ControlPanel extends React.Component {
 
@@ -14,12 +14,6 @@ class ControlPanel extends React.Component {
         this.changeCellValue = this.changeCellValue.bind(this);
     }
 
-    generateSudou = () => {
-        eventRegistry.getEvent(
-            eventNameGenerator.getChangeCellNumberEventName(0 , 0)
-        )(9);
-    }
-
     changeCellValue = () => {
         var x = this.state.xRef.current.value;
         var y = this.state.yRef.current.value;
@@ -29,9 +23,12 @@ class ControlPanel extends React.Component {
         y = parseInt(y);
         value = parseInt(value);
 
-        eventRegistry.getEvent(
-            eventNameGenerator.getChangeCellNumberEventName(x, y)
-        )(value);
+        var events = this.props.events;
+        events.getRoot()
+              .getChild('board')
+              .getChild("box_" + parseInt(x / 3) + "_" + parseInt(y / 3))
+              .getChild("cell_"+ x % 3 + "_" + y % 3)
+              .fire('changeNumber', value);
     }
 
     render() {

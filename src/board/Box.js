@@ -1,7 +1,6 @@
 import React from 'react';
 import Cell from './Cell.js';
 import injectSheet from 'react-jss';
-import { eventRegistry, eventNameGenerator } from '../EventRegistry.js';
 
 const styles = {
     box: {
@@ -29,38 +28,31 @@ class Box extends React.Component{
             childrens: this.createChildrens(this.props.size, this.props.x, this.props.y)
         }
 
-        this.onNumberChanged = this.onNumberChanged.bind(this);
-        this.crossBoxValidations = this.crossBoxValidations.bind(this);
-    }
+        var events = this.props.events;
 
-    componentDidMount(){
-        eventRegistry.addEvent(
-            eventNameGenerator.getCrossBoxValidatiobsEventName(this.props.x, this.props.y),
-            this.crossBoxValidations
-        )
+        events.addEvent('onNumberChanged', this.onNumberChanged);
+        events.addEvent('crossBoxValidations', this.crossBoxValidations);
     }
 
     crossBoxValidations = (number, x, y) => {
         for (var i = 0; i < this.props.size; i++){
             for (var j = 0; j < this.props.size; j++){
                 if (i === x || j === y){
-                    debugger;
-                    eventRegistry.getEvent(
-                        eventNameGenerator.getDeleteAvaiableNumberEventName(
-                            this.props.x * 3 + i,
-                            this.props.y * 3 + j
-                        )
-                    )(number);
+                    this.props.events.getChild("cell_" + i + "_" + j)
+                                     .fire('deleteAvailableNumber', number);
                 }
             }
         }
     }
 
     onNumberChanged = (number, x, y) => {
+        var events = this.props.events;
         for (var i = 0; i < this.props.size; i++){
             for (var j = 0; j < this.props.size; j++){
-                if (!(i === x && j === y))
-                    eventRegistry.getEvent(eventNameGenerator.getDeleteAvaiableNumberEventName(i, j))(number);
+                if (!(i === x && j === y)){
+                    events.getChild("cell_" + i + "_" + j)
+                          .fire("deleteAvailableNumber", number);
+                }
             }
         }
         this.props.onNumberChanged(number, this.props.x, this.props.y, x, y);
@@ -74,8 +66,7 @@ class Box extends React.Component{
             for (let y = 0; y < size; y++){
                 let newRegistry = events.newRegistry("cell_" + x + "_" + y);
                 childrens[x][y] = <Cell key={x + y}
-                 x={x} y={y} onNumberChanged={this.onNumberChanged}
-                 size={size}
+                 x={x} y={y} size={size}
                  events={newRegistry}/>;
             }
         }

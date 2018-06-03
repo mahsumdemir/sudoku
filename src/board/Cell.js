@@ -1,7 +1,6 @@
 import React from 'react';
 import Number from './Number.js';
 import injectSheet from 'react-jss';
-import { eventRegistry, eventNameGenerator } from '../EventRegistry.js';
 
 const styles = {
     
@@ -40,42 +39,20 @@ class Cell extends React.Component {
             availableNumbers: this.createAvailableNumbers(props.size)
         }
 
-        this.changeNumber = this.changeNumber.bind(this);
-        this.showError = this.showError.bind(this);
-        this.getNumber = this.getNumber.bind(this);
-        this.onCellClicked = this.onCellClicked.bind(this);
-        this.deleteAvaiableNumber = this.deleteAvaiableNumber.bind(this);
+        var events = props.events;
+        events.addEvent('getNumber', this.getNumber);
+        events.addEvent('changeNumber', this.changeNumber);
+        events.addEvent('showError', this.showError);
+        events.addEvent('deleteAvailableNumber', this.deleteAvailableNumber);
+        events.addEvent('onClick', this.onClick);
     }
 
     createAvailableNumbers(size){
         let array = [];
-        for (var i = 0; i < size * size; i++){
+        for (var i = 1; i <= size * size; i++){
             array.push(i);
         }
         return array;
-    }
-
-    componentDidMount() {
-        let x = this.props.x;
-        let y = this.props.y;
-
-        eventRegistry.addEvent(
-            eventNameGenerator.getChangeCellNumberEventName(x, y),
-            this.changeNumber
-        );
-        eventRegistry.addEvent(
-            eventNameGenerator.getShowErrorEventName(x, y),
-            this.showError
-        );
-        eventRegistry.addEvent(
-            eventNameGenerator.getNumberEventName(x, y),
-            this.getNumber
-        );
-        eventRegistry.addEvent(
-            eventNameGenerator.getDeleteAvaiableNumberEventName(x, y),
-            this.deleteAvaiableNumber
-        );    
-        
     }
 
     getNumber = () => {
@@ -100,7 +77,8 @@ class Cell extends React.Component {
                 style: 'normal',
                 availableNumbers: availableNumbers
             })
-            this.props.onNumberChanged(number, this.props.x, this.props.y);
+            this.props.events.getParent()
+                             .fire('onNumberChanged', number,this.props.x, this.props.y)
         }
     }
 
@@ -110,7 +88,7 @@ class Cell extends React.Component {
         })
     }
 
-    deleteAvaiableNumber(number){
+    deleteAvailableNumber = (number) => {
         var availableNumbers = this.state.availableNumbers;
         var numberIndex = availableNumbers.indexOf(number);
         if (numberIndex !== -1){
@@ -129,7 +107,7 @@ class Cell extends React.Component {
         }
     }
 
-    onCellClicked = () => {
+    onClick = () => {
         console.log("x: " + this.props.x + " y: " + this.props.y + " availableNumbers: " + this.state.availableNumbers); 
     }
 
@@ -137,7 +115,7 @@ class Cell extends React.Component {
         const classes = this.props.classes;
         const className = this.state.style === "normal" ? classes.normalCell : classes.errorCell; 
         return (
-            <div className={[classes.cell + " " + className]} onClick={this.onCellClicked}>
+            <div className={[classes.cell + " " + className]} onClick={this.onClick}>
                 <Number value={this.state.number} />
             </div>
         )

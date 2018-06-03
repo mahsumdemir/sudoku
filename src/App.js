@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import Board from './board/Board';
 import ControlPanel from './ControlPanel.js';
-import {parent} from 'EventRegistry.js'
+import parent from './EventRegistry.js'
 
 class App extends Component {
   render() {

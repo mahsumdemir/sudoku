@@ -45,8 +45,13 @@ class Cell extends React.Component {
         events.addEvent('showError', this.showError);
         events.addEvent('deleteAvailableNumber', this.deleteAvailableNumber);
         events.addEvent('onClick', this.onClick);
+        events.addEvent('getAvailableNumbers', this.getAvailableNumbers)
     }
 
+    getAvailableNumbers = () => {
+        return this.state.availableNumbers;
+    }
+    
     createAvailableNumbers(size){
         let array = [];
         for (var i = 1; i <= size * size; i++){

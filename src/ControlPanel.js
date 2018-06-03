@@ -3,8 +3,8 @@ import { parent } from './EventRegistry.js';
 
 class ControlPanel extends React.Component {
 
-    constructor(){
-        super();
+    constructor(props){
+        super(props);
         this.state ={
             xRef: React.createRef(),
             yRef: React.createRef(),
@@ -12,6 +12,43 @@ class ControlPanel extends React.Component {
         }
 
         this.changeCellValue = this.changeCellValue.bind(this);
+    }
+
+    generateSudoku = () => {
+        var failed = false;
+        this.forEachBox(function(box){
+            if (failed) return;
+            console.log("On " + box.getName())
+            this.forEachCell(box, function(cell){
+                if (failed) return;
+                var availableNumbers = cell.fire('getAvailableNumbers');
+                if (availableNumbers == null & availableNumbers.length < 0) failed = true;
+                var index = Math.floor(availableNumbers.length * Math.random());
+                console.log("Setting " + availableNumbers[index] + " to " + cell.getName());
+                cell.fire('changeNumber', availableNumbers[index]);
+            })
+        })
+
+    }
+
+    forEachBox = (method) => {
+        for (var x = 0; x < this.props.size; x++) {
+            for (var y = 0; y < this.props.size; y++) {
+                var box = this.props.events.getRoot()
+                                           .getChild('board')
+                                           .getChild("box_" + x + "_" + y);
+                method.call(this, box);
+            }          
+        }
+    }
+
+    forEachCell = (box, method) => {
+        for (var x = 0; x < this.props.size; x++) {
+            for (var y = 0; y < this.props.size; y++) {
+                var cell = box.getChild("cell_"+ x % 3 + "_" + y % 3)
+                method.call(this, cell);
+            }          
+        }
     }
 
     changeCellValue = () => {
@@ -40,7 +77,7 @@ class ControlPanel extends React.Component {
                 <button onClick={this.changeCellValue}>changeCellValue </button>
                 <br />
                 <br />
-                <button onClick={this.generateSudou} > Generate Sudoku </button>
+                <button onClick={this.generateSudoku} > Generate Sudoku </button>
             </div>
         )
     }

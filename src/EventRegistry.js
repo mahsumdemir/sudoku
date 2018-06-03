@@ -32,8 +32,8 @@ var eventRegistry = function (name, parent) {
           console.log("There is no event name:" + name + " in " + _name);
           return;
         }
-        console.log("executing event " + name + " on " + _name);
-        _events[name](...params); 
+        //console.log("executing event " + name + " on " + _name);
+        return _events[name](...params); 
       },
 
       newRegistry: function(name){

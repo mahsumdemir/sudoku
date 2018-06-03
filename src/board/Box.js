@@ -34,42 +34,47 @@ class Box extends React.Component{
         events.addEvent('crossBoxValidations', this.crossBoxValidations);
     }
 
-    crossBoxValidations = (number, x, y) => {
+
+    forEachCell = (method) => {
         for (var i = 0; i < this.props.size; i++){
             for (var j = 0; j < this.props.size; j++){
-                if (i === x || j === y){
-                    this.props.events.getChild("cell_" + i + "_" + j)
-                                     .fire('deleteAvailableNumber', number);
-                }
+                method.call(this, i, j);
             }
         }
+    }
+
+    crossBoxValidations = (number, x, y) => {
+        this.forEachCell(function(cellX, cellY){
+            if (cellX === x || cellY === y){
+                this.props.events.getChild("cell_" + cellX + "_" + cellY)
+                                 .fire('deleteAvailableNumber', number);
+            }
+        })
     }
 
     onNumberChanged = (number, x, y) => {
         var events = this.props.events;
-        for (var i = 0; i < this.props.size; i++){
-            for (var j = 0; j < this.props.size; j++){
-                if (!(i === x && j === y)){
-                    events.getChild("cell_" + i + "_" + j)
-                          .fire("deleteAvailableNumber", number);
-                }
+        this.forEachCell(function(cellX, cellY){
+            if (!(cellX === x && cellY === y)){
+                events.getChild("cell_" + cellX + "_" + cellY)
+                      .fire("deleteAvailableNumber", number);
             }
-        }
+        })
         this.props.onNumberChanged(number, this.props.x, this.props.y, x, y);
     }
+
 
     createChildrens = function(size, boxX, boxY){
         let events = this.props.events;
         const childrens = [];
-        for (let x = 0; x < size; x++){
-            childrens[x] = [];
-            for (let y = 0; y < size; y++){
-                let newRegistry = events.newRegistry("cell_" + x + "_" + y);
-                childrens[x][y] = <Cell key={x + y}
-                 x={x} y={y} size={size}
-                 events={newRegistry}/>;
-            }
-        }
+        this.forEachCell(function(cellX, cellY){
+            if (childrens[cellX] == null) childrens[cellX] = [];
+            
+            let newRegistry = events.newRegistry("cell_" + cellX + "_" + cellY);
+            childrens[cellX][cellY] = <Cell key={cellX + cellY}
+                                    x={cellX} y={cellY} size={size}
+                                    events={newRegistry}/>;
+        });
         
         return childrens;
     }

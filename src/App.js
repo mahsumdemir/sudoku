@@ -9,7 +9,7 @@ class App extends Component {
     return (
       <div className="App">
         <Board size={3} events={parent.newRegistry("board")}/>
-        <ControlPanel events={parent.newRegistry("controlPanel")}/>
+        <ControlPanel size={3} events={parent.newRegistry("controlPanel")}/>
       </div>
     );
   }

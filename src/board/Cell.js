@@ -39,20 +39,28 @@ class Cell extends React.Component {
             availableNumbers: this.createAvailableNumbers(props.size)
         }
 
+        this.deleteAvailableNumber = this.deleteAvailableNumber.bind(this);
+        this.getStyle = this.getStyle.bind(this);
+        this.clear = this.clear.bind(this);
+
         var events = props.events;
         events.addEvent('getNumber', this.getNumber);
         events.addEvent('changeNumber', this.changeNumber);
         events.addEvent('showError', this.showError);
         events.addEvent('deleteAvailableNumber', this.deleteAvailableNumber);
         events.addEvent('onClick', this.onClick);
-        events.addEvent('getAvailableNumbers', this.getAvailableNumbers)
+        events.addEvent('getAvailableNumbers', this.getAvailableNumbers);
+        events.addEvent('getStyle', this.getStyle);
+        events.addEvent('clear', this.clear);
+
     }
 
-    getAvailableNumbers = () => {
-        return this.state.availableNumbers;
-    }
+    clear = () => this.setState({number: 0})
+    getStyle = () => this.state.style;
+    getAvailableNumbers = () => this.state.availableNumbers;
     
     createAvailableNumbers(size){
+
         let array = [];
         for (var i = 1; i <= size * size; i++){
             array.push(i);
@@ -76,11 +84,10 @@ class Cell extends React.Component {
                 style: 'error'
             })
         } else {
-            availableNumbers.splice(numberIndex, 1);
             this.setState({
                 number: number,
                 style: 'normal',
-                availableNumbers: availableNumbers
+                availableNumbers: []
             })
             this.props.events.getParent()
                              .fire('onNumberChanged', number,this.props.x, this.props.y)
@@ -94,19 +101,22 @@ class Cell extends React.Component {
     }
 
     deleteAvailableNumber = (number) => {
+        if (this.state.number !== 0) return;
+
         var availableNumbers = this.state.availableNumbers;
         var numberIndex = availableNumbers.indexOf(number);
         if (numberIndex !== -1){
             availableNumbers.splice(numberIndex, 1);
         }
 
-        if (availableNumbers.length < 1){
+        if (availableNumbers.length < 1 && this.state.number === 0){
             this.setState({
                 style: 'error',
                 availableNumbers: []
             })
         } else {
             this.setState({
+                style: 'normal',
                 availableNumbers: availableNumbers
             })
         }

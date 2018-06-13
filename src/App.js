@@ -5,6 +5,16 @@ import ControlPanel from './ControlPanel.js';
 import parent from './EventRegistry.js'
 
 class App extends Component {
+
+  constructor(){
+    super();
+
+    this._forceUpdate = this._forceUpdate.bind(this);
+    parent.addEvent('forceUpdate');
+  }
+
+  _forceUpdate = () => this.forceUpdate();
+
   render() {
     return (
       <div className="App">

@@ -8,17 +8,27 @@ class ControlPanel extends React.Component {
         this.state ={
             xRef: React.createRef(),
             yRef: React.createRef(),
-            valueRef: React.createRef()
+            valueRef: React.createRef(),
         }
+
 
         this.changeCellValue = this.changeCellValue.bind(this);
     }
 
+    count = 0;
+
     generateSudoku = () => {
+
+        this.forEachBox(function(box){
+            this.forEachCell(box, function(cell){
+                cell.fire('clear');
+            })
+        })
+
+
         var failed = false;
         this.forEachBox(function(box){
             if (failed) return;
-            console.log("On " + box.getName())
             this.forEachCell(box, function(cell){
                 if (failed) return;
                 var availableNumbers = cell.fire('getAvailableNumbers');
@@ -28,6 +38,21 @@ class ControlPanel extends React.Component {
                 cell.fire('changeNumber', availableNumbers[index]);
             })
         })
+
+        this.props.events.getParent().fire('forceUpdate');
+
+        var tryAgain = false;
+        this.forEachBox(function(box){
+            this.forEachCell(box, function(cell){
+                if (cell.fire('getStyle') === 'error') tryAgain = true;
+            })
+        })
+
+        if (this.count === 100){
+            this.count = 0;
+            debugger;
+        }
+        if (tryAgain) this.generateSudoku();
 
     }
 

@@ -25,7 +25,12 @@ class Board extends React.Component {
 
         this.onNumberChanged = this.onNumberChanged.bind(this);
         events.addEvent('onNumberChanged', this.onNumberChanged);
+        events.addEvent('getX', this.getX);
+        events.addEvent('getY', this.getY);
     }
+
+    getX = () => this.props.x
+    getY = () => this.props.y
 
     forEachBox = (method) => {
         for (var x = 0; x < this.props.size; x++) {
